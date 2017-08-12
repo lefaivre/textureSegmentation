@@ -25,7 +25,7 @@ Ensure these packages are installed:
 - numpy
 - scipy (for signal, cluster, and ndimage)
 - argparse
-- sklearn (for cluster
+- sklearn (for cluster)
 - matplotlib (for pyplot)
 - glob
 - os

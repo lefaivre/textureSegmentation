@@ -111,6 +111,20 @@ def printFeatureVectors(outDir, featureVectors):
         f.write("\n")
     f.close()
 
+# If we want to read in some feature vectors instead of creating them.
+def readInFeatureVectorsFromFile(dir):
+    list = [line.rstrip('\n') for line in open(dir)]
+    list = [i.split() for i in list]
+    newList = []
+    for row in list:
+        newRow = []
+        for item in row:
+            floatitem = float(item)
+            newRow.append(floatitem)
+        newList.append(newRow)
+
+    return newList
+
 # Print the intermediate results before clustering occurs
 def printFeatureImages(featureImages, naming, printlocation):
 
@@ -244,18 +258,6 @@ def createGridWithCircle(listOfBrodatzInts, circleInt, outName):
     background.paste(output, offset, img)
     background.save(brodatz + outName, format="png")
     deleteCroppedImages()
-
-def readInFeatureVectorsFromFile(dir):
-    list = [line.rstrip('\n') for line in open(dir)]
-    list = [i.split() for i in list]
-    newList = []
-    for row in list:
-        newRow = []
-        for item in row:
-            floatitem = float(item)
-            newRow.append(floatitem)
-        newList.append(newRow)
-    return newList
 
 def createTexturePair(pair, outName):
     pathsToTemp = [brodatz + "D" + str(pair[0]) + ".png", brodatz + "D" + str(pair[1]) + ".png"]
