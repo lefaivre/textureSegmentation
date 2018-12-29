@@ -124,7 +124,6 @@ def nonLinearTransducer(img, gaborImages, L, sigmaWeight, filters):
             gaborImage = cv2.normalize(gaborImage, gaborImage, alpha=-8, beta=8, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
         else:
             gaborImage = cv2.normalize(gaborImage, alpha=-8, beta=8, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-
         height, width = gaborImage.shape
         copy = np.zeros(img.shape)
         for row in range(height):
@@ -278,7 +277,7 @@ def main():
                         type=float, required=False)
     parser.add_argument('-c', help='Output grey? True/False, DEFAULT = False', nargs='?', const=False, default=False,
                         type=bool, required=False)
-    parser.add_argument('-i', help='print(intermediate results (filtered/feature images)? True/False, DEFAULT = False', nargs='?', const=False, default=False,
+    parser.add_argument('-i', help='Print intermediate results (filtered/feature images)? True/False, DEFAULT = False', nargs='?', const=False, default=False,
                         type=bool, required=False)
 
     args = parser.parse_args()
