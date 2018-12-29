@@ -120,7 +120,10 @@ def nonLinearTransducer(img, gaborImages, L, sigmaWeight, filters):
 
         #gaborImage = cv2.normalize(gaborImage, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
         # Normalization sets the input to the active range [-2,2] this becomes [-8,8] with alpha_
-        gaborImage = cv2.normalize(gaborImage, alpha=-8, beta=8, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+        if int(cv2.__version__[0]) >= 3:
+            gaborImage = cv2.normalize(gaborImage, gaborImage, alpha=-8, beta=8, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+        else:
+            gaborImage = cv2.normalize(gaborImage, alpha=-8, beta=8, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
         height, width = gaborImage.shape
         copy = np.zeros(img.shape)
@@ -165,9 +168,9 @@ def applyGaussian(gaborImage, L, sigmaWeight, filter):
     destroyImage = False
     sig = 1
     if (u_0 < 0.000001):
-        print 'div by zero occured for calculation:'
-        print "sigma = sigma_weight * (N_c/u_0), sigma will be set to zero"
-        print "removing potential feature image!"
+        print("div by zero occured for calculation:")
+        print("sigma = sigma_weight * (N_c/u_0), sigma will be set to zero")
+        print("removing potential feature image!")
         destroyImage = True
     else:
         sig = sigmaWeight * (N_c / u_0)
@@ -188,7 +191,7 @@ def runGabor(args):
 
     infile = args.infile
     if(not os.path.isfile(infile)):
-        print infile, ' is not a file!'
+        print(infile, " is not a file!")
         exit(0)
 
     outfile = args.outfile
@@ -197,7 +200,7 @@ def runGabor(args):
 
     M_transducerWindowSize = args.M
     if((M_transducerWindowSize % 2) == 0):
-        print 'Gaussian window size not odd, using next odd number'
+        print('Gaussian window size not odd, using next odd number')
         M_transducerWindowSize += 1
 
     k_clusters = args.k
@@ -215,17 +218,20 @@ def runGabor(args):
     greyOutput = args.c
     printIntermediateResults = args.i
 
-    img = cv2.imread(infile, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    if int(cv2.__version__[0]) >= 3:
+        img = cv2.imread(infile, 0)
+    else:
+        img = cv2.imread(infile, cv2.CV_LOAD_IMAGE_GRAYSCALE)
     lambdas = getLambdaValues(img)
     filters = build_filters(lambdas, k_gaborSize, gammaSigmaPsi)
 
-    print "Gabor kernels created, getting filtered images"
+    print("Gabor kernels created, getting filtered images")
     filteredImages = getFilterImages(filters, img)
     filteredImages = filterSelection(filteredImages, R_threshold, img, howManyFeatureImages)
     if(printIntermediateResults):
         _utils.printFeatureImages(filteredImages, "filter", printlocation)
 
-    print "Applying nonlinear transduction with Gaussian smoothing"
+    print("Applying nonlinear transduction with Gaussian smoothing")
     featureImages = nonLinearTransducer(img, filteredImages, M_transducerWindowSize, sigmaWeight, filters)
     featureImages = removeFeatureImagesWithSmallVariance(featureImages, variance_Threshold)
 
@@ -235,7 +241,7 @@ def runGabor(args):
     featureVectors = _utils.constructFeatureVectors(featureImages, img)
     featureVectors = _utils.normalizeData(featureVectors, False, spatialWeight=spatialWeight)
 
-    print "Clustering..."
+    print("Clustering...")
     labels = _utils.clusterFeatureVectors(featureVectors, k_clusters)
     _utils.printClassifiedImage(labels, k_clusters, img, outfile, greyOutput)
 
@@ -272,7 +278,7 @@ def main():
                         type=float, required=False)
     parser.add_argument('-c', help='Output grey? True/False, DEFAULT = False', nargs='?', const=False, default=False,
                         type=bool, required=False)
-    parser.add_argument('-i', help='Print intermediate results (filtered/feature images)? True/False, DEFAULT = False', nargs='?', const=False, default=False,
+    parser.add_argument('-i', help='print(intermediate results (filtered/feature images)? True/False, DEFAULT = False', nargs='?', const=False, default=False,
                         type=bool, required=False)
 
     args = parser.parse_args()
